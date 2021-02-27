@@ -21,9 +21,9 @@
     },
     "test_args": {
         "noise": 25,
-        "load_path": "",
+        "load_path": "saved_models/acsc4/epoch_34",
         "name": "alista",
-        "testset_famous_path": "/data/hillel/data_sets/test_images/",
-        "testset_pascal_path": "/data/VOCdevkit/VOC2010/JPEGImages/"
+        "testset_famous_path": "/data/test_images/",
+        "testset_pascal_path": "/data/"
     }
 }

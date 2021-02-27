@@ -25,8 +25,8 @@
         "noise": 25,
         "load_path": "saved_models/acsc4/epoch_34",
         "name": "acsc4",
-        "testset_famous_path": "test_images/",
-        "testset_pascal_path": "/data/VOCdevkit/VOC2010/JPEGImages/",
+        "testset_famous_path": "data/test_images/",
+        "testset_pascal_path": "data/JPEGImages/",
         "final_famous_psnrs": {
             "peppers256": {
                 "ours": 30.992401754802422,

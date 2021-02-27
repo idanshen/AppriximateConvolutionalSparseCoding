@@ -9,7 +9,7 @@ import os
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import pybm3d
+# import pybm3d
 import scipy.misc
 from convsparse_net import LISTAConvDict
 from datasets import  DatasetFromNPZ
@@ -116,14 +116,14 @@ def avarge_psnr_testset(model, test_loader, border, noise):
     def _to_np(_img):
         return to_np(_img)[0, 0, border:-border, border:-border]
 
-    def _bm3d(_img_n):
-        return -1
-        res = pybm3d.bm3d.bm3d(to_np(_img_n)[0, 0, ...], noise)
-        #res[np.where(np.isnan(res))] = 0
-        return res[border:-border, border:-border]
+    # def _bm3d(_img_n):
+    #     return -1
+    #     res = pybm3d.bm3d.bm3d(to_np(_img_n)[0, 0, ...], noise)
+    #     #res[np.where(np.isnan(res))] = 0
+    #     return res[border:-border, border:-border]
 
     ours_psnr = 0
-    bm3d_psnr = 0
+    # bm3d_psnr = 0
     avg_over = len(test_loader)
 
     print('running avg psnr avg_over image count')
@@ -137,18 +137,18 @@ def avarge_psnr_testset(model, test_loader, border, noise):
 
         np_img = _to_np(img)
         np_output = np.clip(_to_np(output), 0, 1)
-        bm3d_img = np.clip(_bm3d(img_n), 0, 1)
+        # bm3d_img = np.clip(_bm3d(img_n), 0, 1)
 
-        bm3d_psnr += common.psnr(np_img, bm3d_img)
+        # bm3d_psnr += common.psnr(np_img, bm3d_img)
         ours_psnr += common.psnr(np_img, np_output)
 
         img_count += 1
         if img_count == avg_over:
             break
-    bm3d_psnr = bm3d_psnr / img_count
+    # bm3d_psnr = bm3d_psnr / img_count
     ours_psnr = ours_psnr / img_count
-    print(f'testset avargs of {img_count} psnr ours - {ours_psnr}, bm3d - {bm3d_psnr}')
-    return ours_psnr, bm3d_psnr
+    print(f'testset avargs of {img_count} psnr ours - {ours_psnr}')  # , bm3d - {bm3d_psnr}')
+    return ours_psnr  # , bm3d_psnr
 
 def famous_images_teset(model, test_loader, image_names, border, noise):
     """Run and save tests on specific images.
@@ -158,10 +158,10 @@ def famous_images_teset(model, test_loader, image_names, border, noise):
     def _to_np(x):
         return to_np(x)[0, 0, border:-border, border:-border]
 
-    def _bm3d(x):
-        res = pybm3d.bm3d.bm3d(to_np(x)[0, 0, ...], noise)
-        res[np.where(np.isnan(res))] = 0
-        return res[border:-border, border:-border]
+    # def _bm3d(x):
+    #     res = pybm3d.bm3d.bm3d(to_np(x)[0, 0, ...], noise)
+    #     res[np.where(np.isnan(res))] = 0
+    #     return res[border:-border, border:-border]
 
 
     psnrs = []
@@ -179,20 +179,21 @@ def famous_images_teset(model, test_loader, image_names, border, noise):
         np_output = np.clip(_to_np(output), 0, 1)
         np_img_n = _to_np(img_n)
 
-        bm3d_img = _bm3d(img_n)
+        # bm3d_img = _bm3d(img_n)
 
-        bm3d_psnr = common.psnr(np_img, bm3d_img)
+        # bm3d_psnr = common.psnr(np_img, bm3d_img)
         ours_psnr = common.psnr(np_img, np_output, False)
-        psnrs.append({'ours': ours_psnr, 'bm3d': bm3d_psnr})
+        # psnrs.append({'ours': ours_psnr, 'bm3d': bm3d_psnr})
         res_array.append((np_img, np_img_n, np_output, bm3d_img))
 
-        print('Test Image {} psnr ours {} bm3d {}'.format(test_name, ours_psnr,
-                                                   bm3d_psnr))
+        # print('Test Image {} psnr ours {} bm3d {}'.format(test_name, ours_psnr,
+        #                                            bm3d_psnr))
+        print('Test Image {} psnr ours {}'.format(test_name, ours_psnr))
         idx += 1
 
-    print('Avg famous psnr ours: {} other: {}'.format(np.mean([p['ours'] for p in psnrs]),
-                                               np.mean([p['bm3d'] for p in psnrs])))
-
+    # print('Avg famous psnr ours: {} other: {}'.format(np.mean([p['ours'] for p in psnrs]),
+    #                                            np.mean([p['bm3d'] for p in psnrs])))
+    print('Avg famous psnr ours: {}'.format(np.mean([p['ours'] for p in psnrs])))
     return psnrs, res_array
 
 def test(args, saved_model_path, noise, famous_path, testset_path=None):
@@ -210,12 +211,14 @@ def test(args, saved_model_path, noise, famous_path, testset_path=None):
     if testset_path is not None and os.path.isdir(testset_path):
         testset = create_test_dataset(testset_path, noise, padding)
         test_loader = DataLoader(testset)
-        ours_psnr, bm3d_psnr = avarge_psnr_testset(model, test_loader,
+        # ours_psnr, bm3d_psnr = avarge_psnr_testset(model, test_loader,
+        #                                            padding, norm_noise)
+        ours_psnr = avarge_psnr_testset(model, test_loader,
                                                    padding, norm_noise)
     else:
         print('testset path was not provided or does not exsist on machine'
               +' skipping to famouse images testset')
-        ours_psnr = bm3d_psnr = 0
+        ours_psnr = 0  # bm3d_psnr = 0
 
     testset = create_famous_dataset(famous_path, noise, padding)
     file_names = testset.image_filenames
@@ -229,8 +232,8 @@ def test(args, saved_model_path, noise, famous_path, testset_path=None):
                 padding,
                 norm_noise)
 
+    return fam_psnrs, fam_res_array, file_names, ours_psnr  # , bm3d_psnr
 
-    return fam_psnrs, fam_res_array, file_names, ours_psnr, bm3d_psnr
 
 def _test(args_file):
     _args = arguments.load_args(args_file)
@@ -243,10 +246,13 @@ def _test(args_file):
     noise = test_args['noise']
 
     log_dir = os.path.dirname(model_path)
-    psnr, res, file_names, ours_psnr, bm3d_psnr =\
+    # psnr, res, file_names, ours_psnr, bm3d_psnr =\
+    #         test(model_args, model_path, noise, famous_ims, voc_ims)
+    psnr, res, file_names, ours_psnr =\
             test(model_args, model_path, noise, famous_ims, voc_ims)
     for f_name, ims in zip(file_names, res):
         plot_res(ims[0], ims[1], ims[2], f_name, log_dir, ims[3])
+
 
 def main():
     """Run test on trained model.
@@ -254,10 +260,11 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--args_file', default='./my_args.json')
+    parser.add_argument('--args_file', default='saved_models/acsc4/params.json')
     args_file = parser.parse_args().args_file
 
     _test(args_file)
+
 
 if __name__ == '__main__':
     main()
